@@ -40,7 +40,7 @@ Link: https://www.atlassian.com/git/tutorials/install-git
 
 Find a suitable area to put the files and type the command. 
 ```
-  - git clone https://github.com/MostDeadDeveloper/Coding-Exercises-To-Python.git
+  - git clone https://github.com/Mica56/ModSim-Project.git
 ```
 # Modify only the folder you are assigned to.
 

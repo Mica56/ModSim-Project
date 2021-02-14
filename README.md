@@ -62,4 +62,4 @@ Find a suitable area to put the files and type the command.
 
 -  Note : A pull request is where we evaluate and finalize your submitted work, and make any possible changes. In the industry, this process is also known as "code review".
 
-(Credits to Carl Viñas)
+(Credits to MostDeadDeveloper)

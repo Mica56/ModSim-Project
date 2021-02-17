@@ -7,31 +7,34 @@ import java.awt.*;
  * @author mikay
  */
 public class rfidGUI {
-    static JButton btnLogin;
-    static JLabel lblPass1;
-    static JLabel lblUser1;
-    static JFrame frmLogin;
-    static JTextField txtPass1;
-    static JTextField txtUser1;
-    static JPanel pnlLogin;
-    
-    static JFrame frmRegister;
-    static JPanel pnlRegister;
-    static JButton btnCancel;
-    static JButton btnSave1;
+    static JFrame frmLogin, frmRegister, frmchangeUser, frmchangePW;
+    static JPanel pnlLogin, pnlRegister, pnlchangeUser, pnlchangePW;
+    static JButton btnLogin, btnCancel, btnSave1, btnSave2, btnSave3;
+    static JLabel lblPass1, lblUser1, lblName, lblSection, lblStudentNum, lblnUser, lblconUser, lblconPass, lblNewPass, lblconNPass;
+    static JTextField txtPass1, txtUser1, txtName, txtStudentNum, txtnUser, txtconUser, txtconPass, txtNewPass, txtconNPass;
     static JComboBox<String> cmbxSection;
-    static JLabel lblName;
-    static JLabel lblSection;
-    static JLabel lblStudentNum;
-    static JTextField txtName;
-    static JTextField txtStudentNum;
     
     static JFrame frmAccount;
     static JPanel pnlAccount;
+    static JButton btnChangePass;
+    static JButton btnChangeUser;
+    static JLabel lblPass2;
+    static JLabel lblUser2;
+    static JTextField txtPass2;
+    static JTextField txtUser2;
+    
+    static JFrame frmMainRecords;
+    static JPanel pnlMainRecords;
+   
+    static JFrame frmScan;
+    static JPanel pnlScan;
 
     rfidGUI(){
         Login();
         Register();
+        Account();
+        changeUser();
+        changePW();
     }
     static void Login(){
         lblUser1 = new JLabel("Username:");
@@ -65,9 +68,11 @@ public class rfidGUI {
     static void MainRecords(){
         
     }
+    
     static void Scan(){
         
     }
+    
     static void Register(){
         frmRegister = new JFrame("Add/Register");
         frmRegister.setSize(350, 250);
@@ -105,21 +110,121 @@ public class rfidGUI {
         frmRegister.add(pnlRegister);
         frmRegister.setVisible(true);
     }
-    static void Account(){
+    
+    static void Account(){//revise button to multiline buttons
         frmAccount = new JFrame("Account");
         frmAccount.setSize(300, 200);
         frmAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         pnlAccount = new JPanel();
         pnlAccount.setLayout(null);
+  
+        lblUser2 = new JLabel("Username:");
+        lblPass2 = new JLabel("Password:");
+        btnChangeUser = new JButton();
+        btnChangePass = new JButton();
+        txtUser2 = new JTextField();
+        txtPass2 = new JTextField();
+
+        pnlAccount.add(lblUser2);
+        lblUser2.setBounds(50, 50, 70, 14);
+
+        pnlAccount.add(lblPass2);
+        lblPass2.setBounds(50, 80, 60, 14);
+
+        btnChangeUser.setFont(new Font("Tahoma", 0, 10)); // NOI18N
+        btnChangeUser.setText("Change username");
+        pnlAccount.add(btnChangeUser);
+        btnChangeUser.setBounds(60, 130, 80, 20);
+
+        btnChangePass.setFont(new Font("Tahoma", 0, 10)); // NOI18N
+        btnChangePass.setText("Change password");
+        pnlAccount.add(btnChangePass);
+        btnChangePass.setBounds(163, 130, 80, 21);
         
+        pnlAccount.add(txtUser2);
+        txtUser2.setBounds(130, 50, 70, 20);
+        pnlAccount.add(txtPass2);
+        txtPass2.setBounds(130, 80, 70, 20);
+        
+        frmAccount.add(pnlAccount);
+        frmAccount.setVisible(true);
     }
+    
     static void changeUser(){
+        frmchangeUser = new JFrame("Account");
+        frmchangeUser.setSize(300, 200);
+        frmchangeUser.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        pnlchangeUser = new JPanel();
+        pnlchangeUser.setLayout(null);
+        
+        lblnUser = new JLabel("New username:");
+        lblconUser = new JLabel("Confirm user:");
+        btnSave2 = new JButton("Save");
+        txtnUser = new JTextField();
+        txtconUser = new JTextField();
+        
+        pnlchangeUser.add(lblnUser);
+        lblnUser.setBounds(50, 50, 90, 14);
+
+        pnlchangeUser.add(lblconUser);
+        lblconUser.setBounds(50, 80, 80, 14);
+
+        pnlchangeUser.add(btnSave2);
+        btnSave2.setBounds(110, 120, 65, 20);
+        
+        pnlchangeUser.add(txtnUser);
+        txtnUser.setBounds(150, 50, 80, 20);
+        
+        pnlchangeUser.add(txtconUser);
+        txtconUser.setBounds(150, 80, 80, 20);
+        
+        frmchangeUser.add(pnlchangeUser);
+        frmchangeUser.setVisible(true);
     }
+    
     static void changePW(){
+        frmchangePW = new JFrame("Account");
+        frmchangePW.setSize(300, 200);
+        frmchangePW.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        pnlchangePW = new JPanel();
+        pnlchangePW.setLayout(null);
+        
+        lblconPass = new JLabel("Confirm password:");
+        lblNewPass = new JLabel("New password:");
+        lblconNPass = new JLabel("Confirm new pass:");
+        btnSave3 = new JButton("Save");
+        txtconPass = new JTextField();
+        txtNewPass = new JTextField();
+        txtconNPass = new JTextField();
+        
+        pnlchangePW.add(lblconPass);
+        lblconPass.setBounds(40, 20, 115, 14);
+        
+        pnlchangePW.add(lblNewPass);
+        lblNewPass.setBounds(40, 50, 90, 14);
+
+        pnlchangePW.add(lblconNPass);
+        lblconNPass.setBounds(40, 80, 110, 14);
+
+        pnlchangePW.add(btnSave3);
+        btnSave3.setBounds(110, 120, 65, 20);
+        
+        pnlchangePW.add(txtconPass);
+        txtconPass.setBounds(160, 20, 80, 20);
+        
+        pnlchangePW.add(txtNewPass);
+        txtNewPass.setBounds(160, 50, 80, 20);
+        
+        pnlchangePW.add(txtconNPass);
+        txtconNPass.setBounds(160, 80, 80, 20);
+        
+        frmchangePW.add(pnlchangePW);
+        frmchangePW.setVisible(true);
     }
+    
     public static void main(String[] args) {
         // TODO code application logic here
         SwingUtilities.invokeLater(rfidGUI::new // public void run()

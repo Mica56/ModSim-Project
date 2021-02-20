@@ -1,7 +1,7 @@
 package rfid_gui;
 
 import javax.swing.*;
-//import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 /**
  *
@@ -11,7 +11,7 @@ public class rfidGUI {
     static JFrame frmLogin, frmRegister, frmchangeUser, frmchangePW;
     static JPanel pnlLogin, pnlRegister, pnlchangeUser, pnlchangePW;
     static JButton btnLogin, btnCancel, btnSave1, btnSave2, btnSave3, btnLogout, btnAccount, btnScan, btnAdd, btnGenerate;
-    static JLabel lblPass1, lblUser1, lblName, lblSection, lblStudentNum, lblnUser, lblconUser, lblconPass, lblNewPass, lblconNPass;
+    static JLabel lblPass1, lblUser1, lblName, lblSection, lblStudentNum, lblnUser, lblconUser, lblconPass, lblNewPass, lblconNPass, lbltemp1, lbltemp2, lbltemp3, lbltemp4;
     static JTextField txtPass1, txtUser1, txtName, txtStudentNum, txtnUser, txtconUser, txtconPass, txtNewPass, txtconNPass;
     static JComboBox<String> cmbxSection;
     
@@ -199,7 +199,7 @@ public class rfidGUI {
         });
     }
     
-    static void Account(){//revise button to multiline buttons, display name and pw from db
+    static void Account(){//display name and pw from db
         frmAccount = new JFrame("Account");
         frmAccount.setSize(300, 200);
         frmAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -211,6 +211,10 @@ public class rfidGUI {
         lblPass2 = new JLabel("Password:");
         btnChangeUser = new JButton();
         btnChangePass = new JButton();
+        lbltemp1 = new JLabel();
+        lbltemp2 = new JLabel();
+        lbltemp3 = new JLabel();
+        lbltemp4 = new JLabel();
 
         pnlAccount.add(lblUser2);
         lblUser2.setBounds(50, 50, 70, 14);
@@ -218,13 +222,21 @@ public class rfidGUI {
         pnlAccount.add(lblPass2);
         lblPass2.setBounds(50, 80, 60, 14);
 
-        btnChangeUser.setText("Change username");
+        lbltemp1.setText("Change");
+        lbltemp2.setText("username");
+        btnChangeUser.setLayout(new BorderLayout());
+        btnChangeUser.add(BorderLayout.NORTH,lbltemp1);
+        btnChangeUser.add(BorderLayout.SOUTH,lbltemp2);
         pnlAccount.add(btnChangeUser);
-        btnChangeUser.setBounds(60, 130, 80, 20);
+        btnChangeUser.setBounds(60, 110, 90, 40);
 
-        btnChangePass.setText("Change password");
+        lbltemp3.setText("Change");
+        lbltemp4.setText("password");
+        btnChangePass.setLayout(new BorderLayout());
+        btnChangePass.add(BorderLayout.NORTH,lbltemp3);
+        btnChangePass.add(BorderLayout.SOUTH,lbltemp4);
         pnlAccount.add(btnChangePass);
-        btnChangePass.setBounds(163, 130, 80, 21);
+        btnChangePass.setBounds(163, 110, 90, 40);
         
         frmAccount.add(pnlAccount);
         frmAccount.setVisible(true);

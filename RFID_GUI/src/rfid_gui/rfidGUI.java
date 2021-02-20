@@ -9,7 +9,7 @@ import java.awt.*;
 public class rfidGUI {
     static JFrame frmLogin, frmRegister, frmchangeUser, frmchangePW;
     static JPanel pnlLogin, pnlRegister, pnlchangeUser, pnlchangePW;
-    static JButton btnLogin, btnCancel, btnSave1, btnSave2, btnSave3;
+    static JButton btnLogin, btnCancel, btnSave1, btnSave2, btnSave3, btnLogout, btnAccount, btnScan, btnAdd, btnGenerate;
     static JLabel lblPass1, lblUser1, lblName, lblSection, lblStudentNum, lblnUser, lblconUser, lblconPass, lblNewPass, lblconNPass;
     static JTextField txtPass1, txtUser1, txtName, txtStudentNum, txtnUser, txtconUser, txtconPass, txtNewPass, txtconNPass;
     static JComboBox<String> cmbxSection;
@@ -23,6 +23,9 @@ public class rfidGUI {
     
     static JFrame frmMainRecords;
     static JPanel pnlMainRecords;
+    static JList lstRecords;
+    static JScrollPane scpRecords; 
+    static String[] objRecords;
    
     static JFrame frmScan;
     static JPanel pnlScan;
@@ -73,6 +76,36 @@ public class rfidGUI {
         
         pnlMainRecords = new JPanel();
         pnlMainRecords.setLayout(null);
+        
+        lstRecords = new JList();//takes objRecords
+        scpRecords = new JScrollPane(lstRecords);  // for scrollpane
+        cmbxSection = new JComboBox<>(new String[] { "BSCS 2-1", "BSCS 2-2", "BSCS 2-3" });
+        btnLogout = new JButton("Logout");
+        btnAccount = new JButton("Account");
+        btnScan = new JButton("Scan");
+        btnAdd = new JButton("Add");
+        btnGenerate = new JButton("Generate");
+        
+        pnlMainRecords.add(cmbxSection);
+        cmbxSection.setBounds(60, 50, 250, 20);
+
+        pnlMainRecords.add(btnLogout);
+        btnLogout.setBounds(70, 560, 80, 23);
+
+        pnlMainRecords.add(btnAccount);
+        btnAccount.setBounds(180, 560, 80, 23);
+
+        pnlMainRecords.add(btnScan);
+        btnScan.setBounds(460, 160, 73, 23);
+
+        pnlMainRecords.add(btnAdd);
+        btnAdd.setBounds(460, 230, 73, 23);
+
+        pnlMainRecords.add(btnGenerate);
+        btnGenerate.setBounds(460, 300, 90, 23);
+        
+        pnlMainRecords.add(scpRecords);
+        scpRecords.setBounds(60, 90, 380, 460);  // for scrollpane
         
         frmMainRecords.add(pnlMainRecords);
         frmMainRecords.setVisible(true);   

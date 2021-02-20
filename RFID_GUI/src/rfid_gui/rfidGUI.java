@@ -1,7 +1,8 @@
 package rfid_gui;
 
 import javax.swing.*;
-import java.awt.*;
+//import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 /**
  *
  * @author mikay
@@ -32,13 +33,7 @@ public class rfidGUI {
     static JButton btnStop;
 
     rfidGUI(){
-        Login();
-        MainRecords();
-        Scan();
-        Register();
-        Account();
-        changeUser();
-        changePW();
+        Login();      
     }
     static void Login(){
         lblUser1 = new JLabel("Username:");
@@ -67,6 +62,11 @@ public class rfidGUI {
         
         frmLogin.add(pnlLogin);
         frmLogin.setVisible(true);
+        
+        btnLogin.addActionListener((ActionEvent objAE) -> {
+            MainRecords();
+            frmLogin.dispose();
+        });
     }
    
     static void MainRecords(){
@@ -108,7 +108,24 @@ public class rfidGUI {
         scpRecords.setBounds(60, 90, 380, 460);  // for scrollpane
         
         frmMainRecords.add(pnlMainRecords);
-        frmMainRecords.setVisible(true);   
+        frmMainRecords.setVisible(true); 
+        
+        btnScan.addActionListener((ActionEvent objAE) -> {
+            Scan();
+        });
+        
+        btnAdd.addActionListener((ActionEvent objAE) -> {
+            Register();
+        });
+        
+        btnAccount.addActionListener((ActionEvent objAE) -> {
+            Account();
+        });
+        
+        btnLogout.addActionListener((ActionEvent objAE) -> {
+            frmMainRecords.dispose();
+            Login(); 
+        });
     }
     
     static void Scan(){//should display name & stdnum from db
@@ -134,6 +151,10 @@ public class rfidGUI {
         
         frmScan.add(pnlScan);
         frmScan.setVisible(true);
+        
+        btnStop.addActionListener((ActionEvent objAE) -> {
+            frmScan.dispose();
+        });
     }
     
     static void Register(){
@@ -172,6 +193,10 @@ public class rfidGUI {
         
         frmRegister.add(pnlRegister);
         frmRegister.setVisible(true);
+        
+        btnCancel.addActionListener((ActionEvent objAE) -> {
+            frmRegister.dispose();
+        });
     }
     
     static void Account(){//revise button to multiline buttons, display name and pw from db
@@ -193,18 +218,26 @@ public class rfidGUI {
         pnlAccount.add(lblPass2);
         lblPass2.setBounds(50, 80, 60, 14);
 
-        btnChangeUser.setFont(new Font("Tahoma", 0, 10)); // NOI18N
         btnChangeUser.setText("Change username");
         pnlAccount.add(btnChangeUser);
         btnChangeUser.setBounds(60, 130, 80, 20);
 
-        btnChangePass.setFont(new Font("Tahoma", 0, 10)); // NOI18N
         btnChangePass.setText("Change password");
         pnlAccount.add(btnChangePass);
         btnChangePass.setBounds(163, 130, 80, 21);
         
         frmAccount.add(pnlAccount);
         frmAccount.setVisible(true);
+        
+        btnChangeUser.addActionListener((ActionEvent objAE) -> {
+            frmAccount.dispose();
+            changeUser();
+        });
+        
+        btnChangePass.addActionListener((ActionEvent objAE) -> {
+            frmAccount.dispose();
+            changePW();
+        });
     }
     
     static void changeUser(){
@@ -238,6 +271,10 @@ public class rfidGUI {
         
         frmchangeUser.add(pnlchangeUser);
         frmchangeUser.setVisible(true);
+        
+        btnSave2.addActionListener((ActionEvent objAE) -> {
+            frmchangeUser.dispose();
+        });
     }
     
     static void changePW(){
@@ -279,6 +316,10 @@ public class rfidGUI {
         
         frmchangePW.add(pnlchangePW);
         frmchangePW.setVisible(true);
+        
+        btnSave3.addActionListener((ActionEvent objAE) -> {
+            frmchangePW.dispose();
+        });
     }
     
     public static void main(String[] args) {

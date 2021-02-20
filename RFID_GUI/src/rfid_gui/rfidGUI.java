@@ -20,17 +20,18 @@ public class rfidGUI {
     static JButton btnChangeUser;
     static JLabel lblPass2;
     static JLabel lblUser2;
-    static JTextField txtPass2;
-    static JTextField txtUser2;
     
     static JFrame frmMainRecords;
     static JPanel pnlMainRecords;
    
     static JFrame frmScan;
     static JPanel pnlScan;
+    static JButton btnStop;
 
     rfidGUI(){
         Login();
+        MainRecords();
+        Scan();
         Register();
         Account();
         changeUser();
@@ -66,11 +67,40 @@ public class rfidGUI {
     }
    
     static void MainRecords(){
+        frmMainRecords = new JFrame("Records");
+        frmMainRecords.setSize(600, 650);
+        frmMainRecords.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        pnlMainRecords = new JPanel();
+        pnlMainRecords.setLayout(null);
+        
+        frmMainRecords.add(pnlMainRecords);
+        frmMainRecords.setVisible(true);   
     }
     
-    static void Scan(){
+    static void Scan(){//should display name & stdnum from db
+        frmScan = new JFrame("Scan");
+        frmScan.setSize(300, 200);
+        frmScan.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        pnlScan = new JPanel();
+        pnlScan.setLayout(null);
+        
+        lblName = new JLabel("Name:");
+        lblStudentNum = new JLabel("Student no.:");
+        btnStop = new JButton("Stop");
+        
+        pnlScan.add(lblName);
+        lblName.setBounds(50, 50, 40, 14);
+
+        pnlScan.add(lblStudentNum);
+        lblStudentNum.setBounds(50, 80, 80, 14);
+
+        pnlScan.add(btnStop);
+        btnStop.setBounds(120, 120, 60, 20);
+        
+        frmScan.add(pnlScan);
+        frmScan.setVisible(true);
     }
     
     static void Register(){
@@ -111,7 +141,7 @@ public class rfidGUI {
         frmRegister.setVisible(true);
     }
     
-    static void Account(){//revise button to multiline buttons
+    static void Account(){//revise button to multiline buttons, display name and pw from db
         frmAccount = new JFrame("Account");
         frmAccount.setSize(300, 200);
         frmAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,8 +153,6 @@ public class rfidGUI {
         lblPass2 = new JLabel("Password:");
         btnChangeUser = new JButton();
         btnChangePass = new JButton();
-        txtUser2 = new JTextField();
-        txtPass2 = new JTextField();
 
         pnlAccount.add(lblUser2);
         lblUser2.setBounds(50, 50, 70, 14);
@@ -141,11 +169,6 @@ public class rfidGUI {
         btnChangePass.setText("Change password");
         pnlAccount.add(btnChangePass);
         btnChangePass.setBounds(163, 130, 80, 21);
-        
-        pnlAccount.add(txtUser2);
-        txtUser2.setBounds(130, 50, 70, 20);
-        pnlAccount.add(txtPass2);
-        txtPass2.setBounds(130, 80, 70, 20);
         
         frmAccount.add(pnlAccount);
         frmAccount.setVisible(true);

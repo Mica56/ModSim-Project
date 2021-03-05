@@ -3,17 +3,26 @@ package rfid_gui;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import java.time.LocalDateTime;
+import javax.swing.table.*;
+import java.io.*;
 /**
  *
- * @author mikay
+ * @author mikay & angelo
  */
 public class rfidGUI {
     static JFrame frmLogin, frmRegister, frmchangeUser, frmchangePW;
     static JPanel pnlLogin, pnlRegister, pnlchangeUser, pnlchangePW;
-    static JButton btnLogin, btnCancel, btnSave1, btnSave2, btnSave3, btnLogout, btnAccount, btnScan, btnAdd, btnGenerate;
+    static JButton btnLogin, btnRegister, btnCancel, btnSave1, btnSave2, btnSave3, btnLogout, btnScan, btnAdd, btnGenerate;
     static JLabel lblPass1, lblUser1, lblName, lblSection, lblStudentNum, lblnUser, lblconUser, lblconPass, lblNewPass, lblconNPass, lbltemp1, lbltemp2, lbltemp3, lbltemp4;
-    static JTextField txtPass1, txtUser1, txtName, txtStudentNum, txtnUser, txtconUser, txtconPass, txtNewPass, txtconNPass;
+    static JTextField txtUser1, txtName, txtStudentNum, txtnUser, txtconUser, txtconPass, txtNewPass, txtconNPass;
     static JComboBox<String> cmbxSection;
+    static JPasswordField txtPass1;
     
     static JFrame frmAccount;
     static JPanel pnlAccount;
@@ -24,27 +33,56 @@ public class rfidGUI {
     
     static JFrame frmMainRecords;
     static JPanel pnlMainRecords;
-    static JList lstRecords;
+    JTable tblRecords;
+    DefaultTableModel model = new DefaultTableModel(0, 0);
     static JScrollPane scpRecords; 
     static String[] objRecords;
    
     static JFrame frmScan;
     static JPanel pnlScan;
     static JButton btnStop;
+    
+    LocalDateTime dateNow = LocalDateTime.now();
 
     rfidGUI(){
         Login();      
     }
-    static void Login(){
+    
+    public void toExcel(JTable table, File file){
+    try{
+        TableModel model = table.getModel();
+        FileWriter excel = new FileWriter(file);
+
+        for(int i = 0; i < model.getColumnCount(); i++){
+            excel.write(model.getColumnName(i) + "\t");
+        }
+
+        excel.write("\n");
+
+        for(int i=0; i< model.getRowCount(); i++) {
+            for(int j=0; j < model.getColumnCount(); j++) {
+                excel.write(model.getValueAt(i,j).toString()+"\t");
+            }
+            excel.write("\n");
+        }
+
+        excel.close();
+
+    }catch(IOException e){ System.out.println(e); }
+    }
+    
+    public void Login(){
         lblUser1 = new JLabel("Username:");
         lblPass1 = new JLabel("Password:");
         txtUser1 = new JTextField();
-        txtPass1 = new JTextField();
+        txtPass1 = new JPasswordField();
         btnLogin = new JButton("Login");
+        btnRegister = new JButton("Register");
         
         frmLogin = new JFrame("Login");
         frmLogin.setSize(400, 400);
         frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmLogin.setLocationRelativeTo(null);
         
         pnlLogin = new JPanel();
         pnlLogin.setLayout(null);
@@ -58,42 +96,139 @@ public class rfidGUI {
         pnlLogin.add(txtPass1);
         txtPass1.setBounds(190, 160, 70, 20);
         pnlLogin.add(btnLogin);
-        btnLogin.setBounds(160, 210, 70, 23);
+        btnLogin.setBounds(100, 210, 90, 23);
+        pnlLogin.add(btnRegister);
+        btnRegister.setBounds(200, 210, 90, 23);
         
         frmLogin.add(pnlLogin);
         frmLogin.setVisible(true);
         
+        btnRegister.addActionListener((ActionEvent objAE) ->{
+            JFrame frmRegister = new JFrame("Register");
+            frmRegister.setSize(300,300);
+            frmRegister.setLocationRelativeTo(null);
+            
+            JPanel pnlRegister = new JPanel();
+            pnlRegister.setLayout(null);
+            
+            JLabel lblUserName = new JLabel("Username: ");
+            JLabel lblPassWord = new JLabel("Password: ");
+            JButton btnRegister1 = new JButton("Register");
+            JTextField txtUserName = new JTextField();
+            JTextField txtPassWord = new JTextField();
+            
+            pnlRegister.add(lblUserName);
+            lblUserName.setBounds(50, 50, 70, 20);
+            
+            pnlRegister.add(txtUserName);
+            pnlRegister.add(txtPassWord);
+            txtUserName.setBounds(130, 50, 100, 20);
+            txtPassWord.setBounds(130, 80, 100, 20);
+            
+            pnlRegister.add(lblPassWord);
+            lblPassWord.setBounds(50, 80, 70, 20);
+            
+            pnlRegister.add(btnRegister1);
+            btnRegister1.setBounds(100, 130, 89, 20);
+            
+            frmRegister.add(pnlRegister);
+            frmRegister.setVisible(true);
+            
+            btnRegister1.addActionListener((ActionEvent e) -> {
+                try {
+                    String user_name = txtUserName.getText();
+                    String pass_word = txtPassWord.getText();
+                    
+                    Class.forName("com.mysql.jdbc.Driver");
+                    Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmodsim","root","pop123123");
+                    
+                    PreparedStatement query = con.prepareStatement("insert into login_account (Username, Password) values (?, ?)");
+                
+                    query.setString(1, user_name);
+                    query.setString(2, pass_word);
+                    
+                    int i = query.executeUpdate();
+                    
+                    System.out.println(i + " records updated.");
+                    
+                    JOptionPane.showMessageDialog(null, "Registered successfully.");
+                    
+                    con.close();
+                    
+                    frmRegister.dispose();
+                    
+                } catch (ClassNotFoundException | SQLException ex) {
+                    Logger.getLogger(rfidGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        });
+        
         btnLogin.addActionListener((ActionEvent objAE) -> {
-            MainRecords();
-            frmLogin.dispose();
+            String userName = txtUser1.getText();
+            String passWord = String.valueOf(txtPass1.getPassword());
+            String dbUserName = "";
+            String dbPassWord = "";
+            
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmodsim","root","pop123123");
+                    
+                Statement stmt = con.createStatement();
+                String query = "select * from login_account where Username ='"+ userName +"' && Password ='"+ passWord +"'";
+                
+                ResultSet rs = stmt.executeQuery(query);
+                
+                while (rs.next())   {
+                    dbUserName = rs.getString("Username");
+                    dbPassWord = rs.getString("Password");
+                
+                    if (userName.equals(dbUserName) && passWord.equals(dbPassWord)) {
+                        JOptionPane.showMessageDialog(null, "Successful Login!");
+                    
+                        MainRecords();
+                        frmLogin.dispose();
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "Incorrect login credentials. Please try again!");
+                    }
+                }
+                
+                con.close();
+                    
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(rfidGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
-   
-    static void MainRecords(){
+    
+    public void MainRecords(){
+        String column[] = {"ID", "Name", "Student Number", "Date & Time"};
+        
+        model.setColumnIdentifiers(column);
+        
         frmMainRecords = new JFrame("Records");
         frmMainRecords.setSize(600, 650);
         frmMainRecords.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmMainRecords.setLocationRelativeTo(null);
         
         pnlMainRecords = new JPanel();
         pnlMainRecords.setLayout(null);
         
-        lstRecords = new JList();//takes objRecords
-        scpRecords = new JScrollPane(lstRecords);  // for scrollpane
+        tblRecords = new JTable();//takes objRecords
+        scpRecords = new JScrollPane(tblRecords);  // for scrollpane
         cmbxSection = new JComboBox<>(new String[] { "BSCS 2-1", "BSCS 2-2", "BSCS 2-3" });
         btnLogout = new JButton("Logout");
-        btnAccount = new JButton("Account");
         btnScan = new JButton("Scan");
         btnAdd = new JButton("Add");
         btnGenerate = new JButton("Generate");
+        
+        tblRecords.setModel(model);
         
         pnlMainRecords.add(cmbxSection);
         cmbxSection.setBounds(60, 50, 250, 20);
 
         pnlMainRecords.add(btnLogout);
         btnLogout.setBounds(70, 560, 80, 23);
-
-        pnlMainRecords.add(btnAccount);
-        btnAccount.setBounds(180, 560, 80, 23);
 
         pnlMainRecords.add(btnScan);
         btnScan.setBounds(460, 160, 73, 23);
@@ -110,6 +245,10 @@ public class rfidGUI {
         frmMainRecords.add(pnlMainRecords);
         frmMainRecords.setVisible(true); 
         
+        cmbxSection.addActionListener((ActionEvent objAE) -> {
+            model.setRowCount(0);
+        });
+        
         btnScan.addActionListener((ActionEvent objAE) -> {
             Scan();
         });
@@ -118,36 +257,56 @@ public class rfidGUI {
             Register();
         });
         
-        btnAccount.addActionListener((ActionEvent objAE) -> {
-            Account();
-        });
-        
         btnLogout.addActionListener((ActionEvent objAE) -> {
             frmMainRecords.dispose();
             Login(); 
         });
+        
+        btnGenerate.addActionListener((ActionEvent objAE) -> {
+            JFileChooser fc = new JFileChooser();
+                int option = fc.showSaveDialog(tblRecords);
+                if(option == JFileChooser.APPROVE_OPTION){
+                    String filename = fc.getSelectedFile().getName(); 
+                    String path = fc.getSelectedFile().getParentFile().getPath();
+
+					int len = filename.length();
+					String ext = "";
+					String file = "";
+
+					if(len > 4){
+						ext = filename.substring(len-4, len);
+					}
+
+					if(ext.equals(".xls")){
+						file = path + "\\" + filename; 
+					}else{
+						file = path + "\\" + filename + ".xls"; 
+					}
+					toExcel(tblRecords, new File(file));
+                }
+        });
     }
     
-    static void Scan(){//should display name & stdnum from db
+    public void Scan(){//should display name & stdnum from db
         frmScan = new JFrame("Scan");
         frmScan.setSize(300, 200);
-        frmScan.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmScan.setLocationRelativeTo(null);
         
         pnlScan = new JPanel();
         pnlScan.setLayout(null);
         
-        lblName = new JLabel("Name:");
-        lblStudentNum = new JLabel("Student no.:");
+        JComboBox cmbStudent = new JComboBox();
         btnStop = new JButton("Stop");
+        JButton btnAdd = new JButton("Add");
         
-        pnlScan.add(lblName);
-        lblName.setBounds(50, 50, 40, 14);
-
-        pnlScan.add(lblStudentNum);
-        lblStudentNum.setBounds(50, 80, 80, 14);
+        pnlScan.add(btnAdd);
+        btnAdd.setBounds(170, 120, 60, 20);
 
         pnlScan.add(btnStop);
-        btnStop.setBounds(120, 120, 60, 20);
+        btnStop.setBounds(60, 120, 60, 20);
+        
+        pnlScan.add(cmbStudent);
+        cmbStudent.setBounds(50, 60, 200, 20);
         
         frmScan.add(pnlScan);
         frmScan.setVisible(true);
@@ -155,12 +314,60 @@ public class rfidGUI {
         btnStop.addActionListener((ActionEvent objAE) -> {
             frmScan.dispose();
         });
+        
+        btnAdd.addActionListener((ActionEvent objAE) -> {
+            String student = (String)cmbStudent.getSelectedItem();
+            String rsID = "";
+            String rsName = "";
+            String rsStudentNo = "";
+            
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmodsim","root","pop123123");
+                
+                Statement stmt = con.createStatement();
+                String sql = "select * from student_info where Name = '"+ student +"'";
+                
+                ResultSet rs = stmt.executeQuery(sql);
+                
+                while (rs.next())   {
+                    rsID = rs.getString("ID");
+                    rsName = rs.getString("Name");
+                    rsStudentNo = rs.getString("Student_Number");
+                    
+                    model.addRow(new Object[]{rsID, rsName, rsStudentNo, dateNow});
+                }
+                
+            } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(rfidGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+        });
+        
+        String sql = "select * from student_info";
+        
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmodsim","root","pop123123");
+            
+            PreparedStatement stmt = con.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next())   {
+                cmbStudent.addItem(rs.getString("Name"));
+            }
+            
+            con.close();
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(rfidGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     static void Register(){
         frmRegister = new JFrame("Add/Register");
         frmRegister.setSize(350, 250);
-        frmRegister.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmRegister.setLocationRelativeTo(null);
         
         pnlRegister = new JPanel();
         pnlRegister.setLayout(null);
@@ -197,140 +404,36 @@ public class rfidGUI {
         btnCancel.addActionListener((ActionEvent objAE) -> {
             frmRegister.dispose();
         });
-    }
-    
-    static void Account(){//display name and pw from db
-        frmAccount = new JFrame("Account");
-        frmAccount.setSize(300, 200);
-        frmAccount.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        pnlAccount = new JPanel();
-        pnlAccount.setLayout(null);
-  
-        lblUser2 = new JLabel("Username:");
-        lblPass2 = new JLabel("Password:");
-        btnChangeUser = new JButton();
-        btnChangePass = new JButton();
-        lbltemp1 = new JLabel();
-        lbltemp2 = new JLabel();
-        lbltemp3 = new JLabel();
-        lbltemp4 = new JLabel();
-
-        pnlAccount.add(lblUser2);
-        lblUser2.setBounds(50, 50, 70, 14);
-
-        pnlAccount.add(lblPass2);
-        lblPass2.setBounds(50, 80, 60, 14);
-
-        lbltemp1.setText("Change");
-        lbltemp2.setText("username");
-        btnChangeUser.setLayout(new BorderLayout());
-        btnChangeUser.add(BorderLayout.NORTH,lbltemp1);
-        btnChangeUser.add(BorderLayout.SOUTH,lbltemp2);
-        pnlAccount.add(btnChangeUser);
-        btnChangeUser.setBounds(60, 110, 90, 40);
-
-        lbltemp3.setText("Change");
-        lbltemp4.setText("password");
-        btnChangePass.setLayout(new BorderLayout());
-        btnChangePass.add(BorderLayout.NORTH,lbltemp3);
-        btnChangePass.add(BorderLayout.SOUTH,lbltemp4);
-        pnlAccount.add(btnChangePass);
-        btnChangePass.setBounds(163, 110, 90, 40);
-        
-        frmAccount.add(pnlAccount);
-        frmAccount.setVisible(true);
-        
-        btnChangeUser.addActionListener((ActionEvent objAE) -> {
-            frmAccount.dispose();
-            changeUser();
-        });
-        
-        btnChangePass.addActionListener((ActionEvent objAE) -> {
-            frmAccount.dispose();
-            changePW();
-        });
-    }
-    
-    static void changeUser(){
-        frmchangeUser = new JFrame("Account");
-        frmchangeUser.setSize(300, 200);
-        frmchangeUser.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        pnlchangeUser = new JPanel();
-        pnlchangeUser.setLayout(null);
-        
-        lblnUser = new JLabel("New username:");
-        lblconUser = new JLabel("Confirm user:");
-        btnSave2 = new JButton("Save");
-        txtnUser = new JTextField();
-        txtconUser = new JTextField();
-        
-        pnlchangeUser.add(lblnUser);
-        lblnUser.setBounds(50, 50, 90, 14);
-
-        pnlchangeUser.add(lblconUser);
-        lblconUser.setBounds(50, 80, 80, 14);
-
-        pnlchangeUser.add(btnSave2);
-        btnSave2.setBounds(110, 120, 65, 20);
-        
-        pnlchangeUser.add(txtnUser);
-        txtnUser.setBounds(150, 50, 80, 20);
-        
-        pnlchangeUser.add(txtconUser);
-        txtconUser.setBounds(150, 80, 80, 20);
-        
-        frmchangeUser.add(pnlchangeUser);
-        frmchangeUser.setVisible(true);
-        
-        btnSave2.addActionListener((ActionEvent objAE) -> {
-            frmchangeUser.dispose();
-        });
-    }
-    
-    static void changePW(){
-        frmchangePW = new JFrame("Account");
-        frmchangePW.setSize(300, 200);
-        frmchangePW.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        pnlchangePW = new JPanel();
-        pnlchangePW.setLayout(null);
-        
-        lblconPass = new JLabel("Confirm password:");
-        lblNewPass = new JLabel("New password:");
-        lblconNPass = new JLabel("Confirm new pass:");
-        btnSave3 = new JButton("Save");
-        txtconPass = new JTextField();
-        txtNewPass = new JTextField();
-        txtconNPass = new JTextField();
-        
-        pnlchangePW.add(lblconPass);
-        lblconPass.setBounds(40, 20, 115, 14);
-        
-        pnlchangePW.add(lblNewPass);
-        lblNewPass.setBounds(40, 50, 90, 14);
-
-        pnlchangePW.add(lblconNPass);
-        lblconNPass.setBounds(40, 80, 110, 14);
-
-        pnlchangePW.add(btnSave3);
-        btnSave3.setBounds(110, 120, 65, 20);
-        
-        pnlchangePW.add(txtconPass);
-        txtconPass.setBounds(160, 20, 80, 20);
-        
-        pnlchangePW.add(txtNewPass);
-        txtNewPass.setBounds(160, 50, 80, 20);
-        
-        pnlchangePW.add(txtconNPass);
-        txtconNPass.setBounds(160, 80, 80, 20);
-        
-        frmchangePW.add(pnlchangePW);
-        frmchangePW.setVisible(true);
-        
-        btnSave3.addActionListener((ActionEvent objAE) -> {
-            frmchangePW.dispose();
+        btnSave1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent objAE) {
+                String strName = txtName.getText();
+                String strStudentNum = txtStudentNum.getText();
+                String strSection = (String)cmbxSection.getSelectedItem();
+                
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                    Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbmodsim","root","pop123123");
+                    
+                    PreparedStatement query = con.prepareStatement("insert into student_info (Name, Student_Number, Section) values (?, ?, ?)");
+                
+                    query.setString(1, strName);
+                    query.setString(2, strStudentNum);
+                    query.setString(3, strSection);
+                    
+                    int i = query.executeUpdate();
+                    
+                    System.out.println(i + " records updated.");
+                    
+                    con.close();
+                    
+                    frmRegister.dispose();
+                    
+                } catch (ClassNotFoundException | SQLException ex) {
+                    Logger.getLogger(rfidGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         });
     }
     
